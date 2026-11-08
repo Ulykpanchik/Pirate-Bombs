@@ -160,7 +160,39 @@ public class Bomb : MonoBehaviour
         );
 
         HashSet<PlayerHealth> damagedPlayers =
-            new HashSet<PlayerHealth>();
+    new HashSet<PlayerHealth>();
+
+HashSet<EnemyHealth> damagedEnemies =
+    new HashSet<EnemyHealth>();
+
+foreach (Collider2D target in targets)
+{
+    // Damage player
+    PlayerHealth player =
+        target.GetComponentInParent<PlayerHealth>();
+
+    if (player != null &&
+        damagedPlayers.Add(player))
+    {
+        player.TakeDamage(
+            damage,
+            transform.position
+        );
+    }
+
+    // Damage enemies
+    EnemyHealth enemy =
+        target.GetComponentInParent<EnemyHealth>();
+
+    if (enemy != null &&
+        damagedEnemies.Add(enemy))
+    {
+        enemy.TakeDamage(
+            damage,
+            transform.position
+        );
+    }
+}
 
         foreach (Collider2D target in targets)
         {
