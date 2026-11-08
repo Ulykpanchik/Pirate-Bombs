@@ -205,5 +205,5 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   ignitionDelay: 0.5
-  extinguishedSprite: {fileID: -855298285791758126, guid: 72b4d7ce5e4173d459b914a823434fc9, type: 3}
+  extinguishedSprite: {fileID: 21300000, guid: 72b4d7ce5e4173d459b914a823434fc9, type: 3}
   extinguishDuration: 0.5

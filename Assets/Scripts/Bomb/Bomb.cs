@@ -91,6 +91,17 @@ public LayerMask itemLayer;
             );
         }
     }
+    public void Consume()
+{
+    if (!IsActive)
+        return;
+
+    // Prevent the bomb from exploding
+    extinguished = true;
+
+    // The enemy has eaten the bomb
+    Destroy(gameObject);
+}
 
     public void Throw(Vector2 force)
     {
@@ -100,14 +111,48 @@ public LayerMask itemLayer;
         rb.AddForce(force, ForceMode2D.Impulse);
     }
 
-    public void Extinguish()
-    {
-        if (!IsActive)
-            return;
+    
+public void Extinguish()
+{
+    // Already exploded or extinguished
+    if (exploded || extinguished)
+        return;
 
-        extinguished = true;
-        StartCoroutine(ExtinguishRoutine());
+    // Stop explosion
+    extinguished = true;
+
+    // Stop bomb animation
+    Animator anim = GetComponent<Animator>();
+
+    if (anim != null)
+        anim.enabled = false;
+
+    // Show extinguished bomb sprite
+    SpriteRenderer sr = GetComponent<SpriteRenderer>();
+
+    if (sr != null && extinguishedSprite != null)
+        sr.sprite = extinguishedSprite;
+
+    // Stop bomb movement
+    Rigidbody2D rb = GetComponent<Rigidbody2D>();
+
+    if (rb != null)
+    {
+#if UNITY_6000_0_OR_NEWER
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+#else
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+#endif
+
+        rb.bodyType = RigidbodyType2D.Static;
     }
+
+    // Do NOT destroy this bomb.
+    // It stays on the map until the level ends.
+}
+
 
     private IEnumerator ExtinguishRoutine()
     {

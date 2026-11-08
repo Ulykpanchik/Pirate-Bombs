@@ -29,6 +29,10 @@ public class Enemy1_Kicker : MonoBehaviour
     public float jumpHeightThreshold = 0.6f;
     public float jumpHorizontalRange = 1.5f;
     public float jumpCooldown = 0.8f;
+    [Header("Obstacle Detection")]
+public LayerMask obstacleLayers;
+public float obstacleCheckDistance = 0.8f;
+public float obstacleCheckHeight = 0.35f;
 
     [Header("Attack")]
     public int attackDamage = 1;
@@ -193,28 +197,37 @@ public class Enemy1_Kicker : MonoBehaviour
         );
     }
 
-    void TryJump(float differenceX)
+    
+void TryJump(float differenceX)
+{
+    if (!IsGrounded() || jumpCooldownTimer > 0f)
+        return;
+
+    float differenceY =
+        target.position.y - transform.position.y;
+
+    bool targetAbove =
+        differenceY > jumpHeightThreshold &&
+        Mathf.Abs(differenceX) <= jumpHorizontalRange;
+
+    float direction = Mathf.Sign(differenceX);
+
+    bool obstacleAhead =
+        Mathf.Abs(differenceX) > attackRange &&
+        HasObstacleAhead(direction);
+
+    if (targetAbove || obstacleAhead)
     {
-        if (!IsGrounded() || jumpCooldownTimer > 0f)
-            return;
+        Velocity = new Vector2(
+            Velocity.x,
+            jumpForce
+        );
 
-        float differenceY =
-            target.position.y - transform.position.y;
-
-        // Jump if target is above and close horizontally
-        if (differenceY > jumpHeightThreshold &&
-            Mathf.Abs(differenceX) <= jumpHorizontalRange)
-        {
-            Velocity = new Vector2(
-                Velocity.x,
-                jumpForce
-            );
-
-            jumpCooldownTimer = jumpCooldown;
-
-            PlayAnimation("Jump");
-        }
+        jumpCooldownTimer = jumpCooldown;
+        PlayAnimation("Jump");
     }
+}
+
 
     void SearchForTarget()
     {
@@ -567,6 +580,40 @@ public class Enemy1_Kicker : MonoBehaviour
     {
         HideAlerts();
     }
+    
+bool HasObstacleAhead(float direction)
+{
+    if (Mathf.Abs(direction) < 0.01f)
+        return false;
+
+    Vector2 origin = groundCheck != null
+        ? (Vector2)groundCheck.position +
+          Vector2.up * obstacleCheckHeight
+        : (Vector2)transform.position;
+
+    RaycastHit2D hit = Physics2D.Raycast(
+        origin,
+        Vector2.right * direction,
+        obstacleCheckDistance,
+        obstacleLayers
+    );
+
+    if (hit.collider == null)
+        return false;
+
+    // Don't jump over the bomb we're trying to kick
+    Bomb hitBomb = hit.collider.GetComponentInParent<Bomb>();
+
+    if (hitBomb != null &&
+        target != null &&
+        hitBomb.transform == target)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 
     void OnDrawGizmosSelected()
     {

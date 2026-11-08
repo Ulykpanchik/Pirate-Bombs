@@ -33,6 +33,7 @@ public class EnemyHealth : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private Enemy1_Kicker kicker;
+    private EnemyBehaviorAI otherAI;
 
     void Awake()
     {
@@ -40,6 +41,7 @@ public class EnemyHealth : MonoBehaviour
         animator = GetComponent<Animator>();
         kicker = GetComponent<Enemy1_Kicker>();
         CurrentHealth = maxHealth;
+        otherAI = GetComponent<EnemyBehaviorAI>();
     }
 
     public void TakeDamage(int damage, Vector2 sourcePosition)
@@ -133,10 +135,20 @@ public class EnemyHealth : MonoBehaviour
         IsTakingHit = false;
 
         // EnemyKicker will resume its normal animation
-        if (kicker != null && kicker.enabled)
-            kicker.ResumeAfterHit();
-        else
-            PlayAnimation("Idle");
+        IsTakingHit = false;
+
+if (kicker != null && kicker.enabled)
+{
+    kicker.ResumeAfterHit();
+}
+else if (otherAI != null && otherAI.enabled)
+{
+    otherAI.ResumeAfterHit();
+}
+else
+{
+    PlayAnimation("Idle");
+}
     }
 
     private IEnumerator DeathRoutine(float direction)
