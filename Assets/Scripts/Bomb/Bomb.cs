@@ -17,6 +17,8 @@ public class Bomb : MonoBehaviour
     [Header("Explosion Effect")]
     public GameObject explosionPrefab;
     public Vector2 explosionOffset = new Vector2(0f, 0.35f);
+    [Header("Item Physics")]
+public LayerMask itemLayer;
 
     [Header("Fuse Settings")]
     public float ignitionDelay = 0.5f;
@@ -141,6 +143,10 @@ public class Bomb : MonoBehaviour
             return;
 
         exploded = true;
+        if (CameraShake.Instance != null)
+{
+    CameraShake.Instance.Shake();
+}
 
         // Spawn explosion animation
         if (explosionPrefab != null)
@@ -207,7 +213,31 @@ foreach (Collider2D target in targets)
         }
 
         Destroy(gameObject);
+        ExplodeItems();
     }
+
+private void ExplodeItems()
+{
+    Collider2D[] items = Physics2D.OverlapCircleAll(
+        transform.position,
+        explosionRadius,
+        itemLayer
+    );
+
+    HashSet<ItemPhysics> affectedItems =
+        new HashSet<ItemPhysics>();
+
+    foreach (Collider2D hit in items)
+    {
+        ItemPhysics item =
+            hit.GetComponentInParent<ItemPhysics>();
+
+        if (item != null && affectedItems.Add(item))
+        {
+            item.ApplyExplosion(transform.position);
+        }
+    }
+}
 
     void OnDrawGizmosSelected()
     {

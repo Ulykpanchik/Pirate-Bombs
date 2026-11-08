@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -14,11 +15,20 @@ public class Enemy1_Kicker : MonoBehaviour
 
     [Header("Target Detection")]
     public Transform player;
-    public float detectionRadius = 5f;
+    public float detectionRadius = 7f;
     public float attackRange = 1f;
 
     [Header("Movement")]
     public float moveSpeed = 3f;
+
+    [Header("Jump Settings")]
+    public Transform groundCheck;
+    public LayerMask groundLayer;
+    public float groundCheckRadius = 0.15f;
+    public float jumpForce = 10f;
+    public float jumpHeightThreshold = 0.6f;
+    public float jumpHorizontalRange = 1.5f;
+    public float jumpCooldown = 0.8f;
 
     [Header("Attack")]
     public int attackDamage = 1;
@@ -27,24 +37,62 @@ public class Enemy1_Kicker : MonoBehaviour
     public float attackDuration = 0.5f;
     public float attackCooldown = 0.8f;
 
-    [Header("Alert Animations")]
-    public GameObject questionEffect;
-    public GameObject alertEffect;
+    [Header("After Bomb Kick")]
+    public float restAfterBombKick = 1f;
+
+    [Header("Alert Position")]
+    public Transform alertPoint;
+
+    [Header("Alert Animation Prefabs")]
+    public GameObject questionPrefab;
+    public GameObject exclamationPrefab;
+
+    [Header("Alert Timing")]
     public float questionDuration = 0.3f;
     public float alertDuration = 0.4f;
 
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
+    private EnemyHealth enemyHealth;
 
     private EnemyState state = EnemyState.Idle;
     private Transform target;
-private EnemyHealth enemyHealth;
+
+    private GameObject questionInstance;
+    private GameObject exclamationInstance;
+
+    private HashSet<Bomb> kickedBombs = new HashSet<Bomb>();
+
     private float stateTimer;
     private float attackCooldownTimer;
+    private float jumpCooldownTimer;
+    private float restTimer;
+
     private bool attackApplied;
+    private bool exclamationShown;
 
     private string currentAnimation = "";
+
+    private Vector2 Velocity
+    {
+        get
+        {
+#if UNITY_6000_0_OR_NEWER
+            return rb.linearVelocity;
+#else
+            return rb.velocity;
+#endif
+        }
+        set
+        {
+#if UNITY_6000_0_OR_NEWER
+            rb.linearVelocity = value;
+#else
+            rb.velocity = value;
+#endif
+        }
+    }
 
     void Awake()
     {
@@ -56,20 +104,34 @@ private EnemyHealth enemyHealth;
 
     void Start()
     {
+        CreateAlertEffects();
         ChangeState(EnemyState.Idle);
     }
 
     void Update()
     {
+        if (IsBlocked())
+        {
+            HideAlerts();
+            return;
+        }
+
         stateTimer += Time.deltaTime;
 
         if (attackCooldownTimer > 0f)
             attackCooldownTimer -= Time.deltaTime;
 
+        if (jumpCooldownTimer > 0f)
+            jumpCooldownTimer -= Time.deltaTime;
+
+        if (restTimer > 0f)
+            restTimer -= Time.deltaTime;
+
         switch (state)
         {
             case EnemyState.Idle:
-                SearchForTarget();
+                if (restTimer <= 0f)
+                    SearchForTarget();
                 break;
 
             case EnemyState.Alert:
@@ -84,44 +146,74 @@ private EnemyHealth enemyHealth;
                 UpdateAttack();
                 break;
         }
-        if (enemyHealth != null &&
-    (enemyHealth.IsDead || enemyHealth.IsTakingHit))
-{
-    return;
-}
     }
 
     void FixedUpdate()
     {
-        float speed = 0f;
+        if (IsBlocked())
+            return;
+
+        float horizontalSpeed = 0f;
 
         if (state == EnemyState.Chase && TargetIsValid())
         {
-            float distance =
+            float differenceX =
                 target.position.x - transform.position.x;
 
-            if (Mathf.Abs(distance) > attackRange)
+            if (Mathf.Abs(differenceX) > attackRange * 0.5f)
             {
-                speed = Mathf.Sign(distance) * moveSpeed;
+                horizontalSpeed =
+                    Mathf.Sign(differenceX) * moveSpeed;
             }
-        }
-        if (enemyHealth != null &&
-    (enemyHealth.IsDead || enemyHealth.IsTakingHit))
-{
-    return;
-}
 
-#if UNITY_6000_0_OR_NEWER
-        rb.linearVelocity = new Vector2(
-            speed,
-            rb.linearVelocity.y
+            TryJump(differenceX);
+        }
+
+        Velocity = new Vector2(
+            horizontalSpeed,
+            Velocity.y
         );
-#else
-        rb.velocity = new Vector2(
-            speed,
-            rb.velocity.y
+    }
+
+    bool IsBlocked()
+    {
+        return enemyHealth != null &&
+            (enemyHealth.IsDead || enemyHealth.IsTakingHit);
+    }
+
+    bool IsGrounded()
+    {
+        if (groundCheck == null)
+            return false;
+
+        return Physics2D.OverlapCircle(
+            groundCheck.position,
+            groundCheckRadius,
+            groundLayer
         );
-#endif
+    }
+
+    void TryJump(float differenceX)
+    {
+        if (!IsGrounded() || jumpCooldownTimer > 0f)
+            return;
+
+        float differenceY =
+            target.position.y - transform.position.y;
+
+        // Jump if target is above and close horizontally
+        if (differenceY > jumpHeightThreshold &&
+            Mathf.Abs(differenceX) <= jumpHorizontalRange)
+        {
+            Velocity = new Vector2(
+                Velocity.x,
+                jumpForce
+            );
+
+            jumpCooldownTimer = jumpCooldown;
+
+            PlayAnimation("Jump");
+        }
     }
 
     void SearchForTarget()
@@ -135,9 +227,8 @@ private EnemyHealth enemyHealth;
     Transform FindNearestTarget()
     {
         Transform nearest = null;
-        float closestDistance = detectionRadius;
+        float closest = detectionRadius;
 
-        // Detect player
         if (player != null)
         {
             PlayerHealth health =
@@ -150,37 +241,40 @@ private EnemyHealth enemyHealth;
                     player.position
                 );
 
-                if (distance <= closestDistance)
+                if (distance <= closest)
                 {
-                    closestDistance = distance;
                     nearest = player;
+                    closest = distance;
                 }
             }
         }
 
-        // Detect bombs
-        Collider2D[] colliders =
+        Collider2D[] nearby =
             Physics2D.OverlapCircleAll(
                 transform.position,
                 detectionRadius
             );
 
-        foreach (Collider2D hit in colliders)
+        foreach (Collider2D hit in nearby)
         {
             Bomb bomb = hit.GetComponentInParent<Bomb>();
 
             if (bomb == null || !bomb.IsActive)
                 continue;
 
+            // Never chase a previously kicked bomb
+            if (kickedBombs.Contains(bomb))
+    continue;
+
             float distance = Vector2.Distance(
                 transform.position,
                 bomb.transform.position
             );
 
-            if (distance < closestDistance)
+            if (distance < closest)
             {
-                closestDistance = distance;
                 nearest = bomb.transform;
+                closest = distance;
             }
         }
 
@@ -197,17 +291,18 @@ private EnemyHealth enemyHealth;
 
         FaceTarget();
 
-        if (stateTimer >= questionDuration)
+        if (!exclamationShown &&
+            stateTimer >= questionDuration)
         {
-            if (questionEffect != null)
-                questionEffect.SetActive(false);
-
-            if (alertEffect != null)
-                alertEffect.SetActive(true);
+            exclamationShown = true;
+            ShowExclamation();
         }
 
-        if (stateTimer >= questionDuration + alertDuration)
+        if (stateTimer >=
+            questionDuration + alertDuration)
+        {
             ChangeState(EnemyState.Chase);
+        }
     }
 
     void UpdateChase()
@@ -219,6 +314,16 @@ private EnemyHealth enemyHealth;
         }
 
         FaceTarget();
+
+        // Use jump animation while in the air
+        if (!IsGrounded())
+        {
+            PlayAnimation("Jump");
+        }
+        else
+        {
+            PlayAnimation("Run");
+        }
 
         float distance = Vector2.Distance(
             transform.position,
@@ -239,6 +344,10 @@ private EnemyHealth enemyHealth;
             attackApplied = true;
             PerformAttack();
         }
+
+        // Attack may have changed the state
+        if (state != EnemyState.Attack)
+            return;
 
         if (stateTimer >= attackDuration)
         {
@@ -270,14 +379,23 @@ private EnemyHealth enemyHealth;
         Bomb bomb = target.GetComponent<Bomb>();
 
         if (bomb != null && bomb.IsActive)
-        {
-            bomb.Throw(new Vector2(
-                direction * bombKickForce,
-                2f
-            ));
+{
+    bomb.Throw(new Vector2(
+        direction * bombKickForce,
+        2f
+    ));
 
-            return;
-        }
+    // Remember the kicked bomb
+    kickedBombs.Add(bomb);
+
+    // Stop following the bomb
+    target = null;
+    restTimer = restAfterBombKick;
+
+    // Do not change to Idle yet.
+    // Let the Attack animation finish.
+    return;
+}
 
         PlayerHealth health =
             target.GetComponent<PlayerHealth>();
@@ -299,15 +417,15 @@ private EnemyHealth enemyHealth;
         Bomb bomb = target.GetComponent<Bomb>();
 
         if (bomb != null)
-            return bomb.IsActive;
+        {
+            return bomb.IsActive &&
+    !kickedBombs.Contains(bomb);
+        }
 
         PlayerHealth health =
             target.GetComponent<PlayerHealth>();
 
-        if (health != null)
-            return !health.IsDead;
-
-        return false;
+        return health != null && !health.IsDead;
     }
 
     void FaceTarget()
@@ -324,11 +442,7 @@ private EnemyHealth enemyHealth;
         state = newState;
         stateTimer = 0f;
 
-        if (questionEffect != null)
-            questionEffect.SetActive(false);
-
-        if (alertEffect != null)
-            alertEffect.SetActive(false);
+        HideAlerts();
 
         switch (state)
         {
@@ -338,9 +452,8 @@ private EnemyHealth enemyHealth;
                 break;
 
             case EnemyState.Alert:
-                if (questionEffect != null)
-                    questionEffect.SetActive(true);
-
+                exclamationShown = false;
+                ShowQuestion();
                 PlayAnimation("Idle");
                 break;
 
@@ -357,14 +470,102 @@ private EnemyHealth enemyHealth;
 
     void PlayAnimation(string animationName)
     {
-        if (animator == null)
-            return;
-
-        if (currentAnimation == animationName)
+        if (animator == null ||
+            currentAnimation == animationName)
             return;
 
         animator.Play(animationName, 0, 0f);
         currentAnimation = animationName;
+    }
+
+    void CreateAlertEffects()
+    {
+        if (alertPoint == null)
+            return;
+
+        if (questionPrefab != null)
+        {
+            questionInstance = Instantiate(
+                questionPrefab,
+                alertPoint
+            );
+
+            questionInstance.transform.localPosition =
+                Vector3.zero;
+
+            questionInstance.SetActive(false);
+        }
+
+        if (exclamationPrefab != null)
+        {
+            exclamationInstance = Instantiate(
+                exclamationPrefab,
+                alertPoint
+            );
+
+            exclamationInstance.transform.localPosition =
+                Vector3.zero;
+
+            exclamationInstance.SetActive(false);
+        }
+    }
+
+    void ShowQuestion()
+    {
+        HideAlerts();
+
+        if (questionInstance != null)
+        {
+            questionInstance.SetActive(true);
+            RestartEffect(questionInstance);
+        }
+    }
+
+    void ShowExclamation()
+    {
+        HideAlerts();
+
+        if (exclamationInstance != null)
+        {
+            exclamationInstance.SetActive(true);
+            RestartEffect(exclamationInstance);
+        }
+    }
+
+    void RestartEffect(GameObject effect)
+    {
+        Animator effectAnimator =
+            effect.GetComponent<Animator>();
+
+        if (effectAnimator != null)
+            effectAnimator.Play(0, 0, 0f);
+    }
+
+    void HideAlerts()
+    {
+        if (questionInstance != null)
+            questionInstance.SetActive(false);
+
+        if (exclamationInstance != null)
+            exclamationInstance.SetActive(false);
+    }
+
+    public void ResumeAfterHit()
+    {
+        if (enemyHealth != null && enemyHealth.IsDead)
+            return;
+
+        currentAnimation = "";
+
+        if (TargetIsValid())
+            ChangeState(EnemyState.Chase);
+        else
+            ChangeState(EnemyState.Idle);
+    }
+
+    void OnDisable()
+    {
+        HideAlerts();
     }
 
     void OnDrawGizmosSelected()
@@ -381,16 +582,4 @@ private EnemyHealth enemyHealth;
             attackRange
         );
     }
-    public void ResumeAfterHit()
-{
-    if (enemyHealth != null && enemyHealth.IsDead)
-        return;
-
-    currentAnimation = "";
-
-    if (TargetIsValid())
-        ChangeState(EnemyState.Chase);
-    else
-        ChangeState(EnemyState.Idle);
-}
 }

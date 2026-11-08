@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -4335508899065957178}
   - component: {fileID: -9162076221832712230}
   - component: {fileID: 2110702124589591680}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Bomb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -83,7 +83,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 0ecf92ddb47281e40aae1466a64697f2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -201,6 +201,9 @@ MonoBehaviour:
     m_Bits: 4294967295
   explosionPrefab: {fileID: 3928491718330778855, guid: 012e70fb2bd0d15479f769bf5b40a2e7, type: 3}
   explosionOffset: {x: 0, y: 0.5}
+  itemLayer:
+    serializedVersion: 2
+    m_Bits: 64
   ignitionDelay: 0.5
   extinguishedSprite: {fileID: -855298285791758126, guid: 72b4d7ce5e4173d459b914a823434fc9, type: 3}
   extinguishDuration: 0.5
