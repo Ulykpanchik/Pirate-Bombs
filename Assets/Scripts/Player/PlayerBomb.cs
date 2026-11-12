@@ -17,6 +17,9 @@ public class PlayerBomb : MonoBehaviour
     [Header("Placement")]
     public float placementDistance = 0.7f;
 
+    [Header("Charge Bar")]
+    public BombChargeBar chargeBar;
+
     private SpriteRenderer spriteRenderer;
     private Collider2D playerCollider;
     private PlayerHealth playerHealth;
@@ -38,6 +41,29 @@ public class PlayerBomb : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.F))
             ReleaseBomb();
+
+        // Update charge bar while holding
+        if (isHolding)
+        {
+            if (!CanUseBomb())
+            {
+                CancelBombHold();
+                return;
+            }
+
+            float holdTime = Time.time - holdStartTime;
+
+            if (chargeBar != null)
+            {
+                float charge = Mathf.InverseLerp(
+                    holdThreshold,
+                    maxChargeTime,
+                    holdTime
+                );
+
+                chargeBar.SetCharge(charge);
+            }
+        }
     }
 
     public void StartBombHold()
@@ -47,6 +73,12 @@ public class PlayerBomb : MonoBehaviour
 
         isHolding = true;
         holdStartTime = Time.time;
+
+        // Show charge bar
+        if (chargeBar != null)
+        {
+            chargeBar.Show();
+        }
     }
 
     public void ReleaseBomb()
@@ -56,11 +88,19 @@ public class PlayerBomb : MonoBehaviour
 
         isHolding = false;
 
+        // Hide charge bar
+        if (chargeBar != null)
+        {
+            chargeBar.Hide();
+        }
+
         if (!CanUseBomb() || bombPrefab == null)
             return;
 
         float holdTime = Time.time - holdStartTime;
-        float direction = spriteRenderer.flipX ? -1f : 1f;
+
+        float direction = spriteRenderer != null &&
+            spriteRenderer.flipX ? -1f : 1f;
 
         if (holdTime < holdThreshold)
         {
@@ -72,6 +112,14 @@ public class PlayerBomb : MonoBehaviour
         }
     }
 
+    public void CancelBombHold()
+    {
+        isHolding = false;
+
+        if (chargeBar != null)
+            chargeBar.Hide();
+    }
+
     bool CanUseBomb()
     {
         return playerHealth == null ||
@@ -81,7 +129,8 @@ public class PlayerBomb : MonoBehaviour
 
     void PlaceBomb(float direction)
     {
-        Vector3 position = transform.position +
+        Vector3 position =
+            transform.position +
             Vector3.right * direction * placementDistance;
 
         Bomb bomb = Instantiate(
@@ -107,6 +156,7 @@ public class PlayerBomb : MonoBehaviour
 
         bomb.IgnorePlayerCollision(playerCollider);
 
+        // Calculate charge from hold duration
         float charge = Mathf.InverseLerp(
             holdThreshold,
             maxChargeTime,
@@ -125,5 +175,10 @@ public class PlayerBomb : MonoBehaviour
         );
 
         bomb.Throw(force);
+    }
+
+    void OnDisable()
+    {
+        CancelBombHold();
     }
 }

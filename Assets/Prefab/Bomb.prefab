@@ -194,7 +194,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bomb
   explosionDelay: 3
-  explosionRadius: 2
+  explosionRadius: 3.5
   damage: 1
   damageLayers:
     serializedVersion: 2

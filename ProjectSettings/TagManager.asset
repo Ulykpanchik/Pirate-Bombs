@@ -12,10 +12,10 @@ TagManager:
   - Ground
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - Item
+  - Player
+  - Enemy
+  - Bomb
   - 
   - 
   - 
