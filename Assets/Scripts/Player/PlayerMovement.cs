@@ -56,11 +56,24 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        // Keyboard movement
-        horizontalInput = Input.GetAxisRaw("Horizontal");
+        // Keyboard + mobile movement
+        float keyboardInput = Input.GetAxisRaw("Horizontal");
 
-        // Jump
-        if (Input.GetButtonDown("Jump") &&
+        float mobileInput = 0f;
+
+        if (MobileButton.LeftHeld)
+            mobileInput -= 1f;
+
+        if (MobileButton.RightHeld)
+            mobileInput += 1f;
+
+        horizontalInput = Mathf.Clamp(
+            keyboardInput + mobileInput, -1f, 1f
+        );
+
+        // Keyboard + mobile jump
+        if ((Input.GetButtonDown("Jump") ||
+             MobileButton.ConsumeJump()) &&
             isGrounded && !isLanding)
         {
             jumpRequested = true;

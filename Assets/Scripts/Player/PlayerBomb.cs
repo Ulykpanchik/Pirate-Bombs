@@ -27,6 +27,9 @@ public class PlayerBomb : MonoBehaviour
     private bool isHolding;
     private float holdStartTime;
 
+    // Track mobile button state
+    private bool wasMobileBombHeld;
+
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -36,11 +39,32 @@ public class PlayerBomb : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
-            StartBombHold();
+        // Keyboard controls
+        bool keyboardPressed = Input.GetKeyDown(KeyCode.F);
+        bool keyboardReleased = Input.GetKeyUp(KeyCode.F);
 
-        if (Input.GetKeyUp(KeyCode.F))
+        // Mobile controls
+        bool mobileHeld = MobileButton.BombHeld;
+
+        bool mobilePressed =
+            mobileHeld && !wasMobileBombHeld;
+
+        bool mobileReleased =
+            !mobileHeld && wasMobileBombHeld;
+
+        // Start charging
+        if (keyboardPressed || mobilePressed)
+        {
+            StartBombHold();
+        }
+
+        // Release bomb
+        if (keyboardReleased || mobileReleased)
+        {
             ReleaseBomb();
+        }
+
+        wasMobileBombHeld = mobileHeld;
 
         // Update charge bar while holding
         if (isHolding)
@@ -156,7 +180,7 @@ public class PlayerBomb : MonoBehaviour
 
         bomb.IgnorePlayerCollision(playerCollider);
 
-        // Calculate charge from hold duration
+        // Calculate charge
         float charge = Mathf.InverseLerp(
             holdThreshold,
             maxChargeTime,
@@ -180,5 +204,6 @@ public class PlayerBomb : MonoBehaviour
     void OnDisable()
     {
         CancelBombHold();
+        wasMobileBombHeld = false;
     }
 }
