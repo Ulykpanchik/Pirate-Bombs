@@ -6,14 +6,14 @@ using UnityEngine.Events;
 public class PlayerHealth : MonoBehaviour
 {
     [Header("Health")]
-    public int maxHealth = 3;
+    [HideInInspector] public int maxHealth;
 
     [Header("Knockback")]
-    public float knockbackForce = 5f;
-    public float knockbackUpForce = 9f;
+    [HideInInspector] public float knockbackForce;
+    [HideInInspector] public float knockbackUpForce;
 
     [Header("Animation")]
-    public float hitDuration = 0.3f;
+    [HideInInspector] public float hitDuration;
 
     [Header("Events")]
     public UnityEvent<int> onHealthChanged;
@@ -30,6 +30,7 @@ public class PlayerHealth : MonoBehaviour
 
     void Awake()
     {
+        LevelSession.ActiveData.Apply(this);
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -134,7 +135,7 @@ public class PlayerHealth : MonoBehaviour
 
     yield return new WaitForSeconds(hitDuration);
 
-    animator.Play("Idle", 0, 0f);
+    animator.Play("Player_Idle", 0, 0f);
     IsTakingHit = false;
 }
 

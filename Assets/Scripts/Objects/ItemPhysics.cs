@@ -6,9 +6,9 @@ using UnityEngine;
 public class ItemPhysics : MonoBehaviour
 {
     [Header("Explosion Physics")]
-    public float explosionForce = 8f;
-    public float upwardForce = 4f;
-    public float rotationForce = 150f;
+    [HideInInspector] public float explosionForce;
+    [HideInInspector] public float upwardForce;
+    [HideInInspector] public float rotationForce;
 
     [Header("Settings")]
     public bool startStatic = true;
@@ -19,6 +19,7 @@ public class ItemPhysics : MonoBehaviour
 
     void Awake()
     {
+        LevelSession.ActiveData.Apply(this);
         rb = GetComponent<Rigidbody2D>();
 
         // Stay still until an explosion

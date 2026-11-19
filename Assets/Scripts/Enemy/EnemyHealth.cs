@@ -7,21 +7,21 @@ using UnityEngine.Events;
 public class EnemyHealth : MonoBehaviour
 {
     [Header("Health")]
-    public int maxHealth = 2;
+    [HideInInspector] public int maxHealth;
 
     [Header("Knockback")]
-    public float knockbackForce = 4f;
-    public float knockbackUpForce = 7f;
+    [HideInInspector] public float knockbackForce;
+    [HideInInspector] public float knockbackUpForce;
 
     [Header("Ground Check")]
     public Transform groundCheck;
     public LayerMask groundLayer;
-    public float groundCheckRadius = 0.15f;
+    [HideInInspector] public float groundCheckRadius;
 
     [Header("Timing")]
-    public float hitDuration = 0.35f;
-    public float landingTimeout = 3f;
-    public float destroyAfterDeath = 2f;
+    [HideInInspector] public float hitDuration;
+    [HideInInspector] public float landingTimeout;
+    [HideInInspector] public float destroyAfterDeath;
 
     [Header("Events")]
     public UnityEvent onEnemyDied;
@@ -37,6 +37,7 @@ public class EnemyHealth : MonoBehaviour
 
     void Awake()
     {
+        LevelSession.ActiveData.Apply(this);
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         kicker = GetComponent<Enemy1_Kicker>();

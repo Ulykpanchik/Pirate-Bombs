@@ -1,0 +1,82 @@
+Assignment 11 Unity verification - 18.11.2026 4:37:58
+PASS Scene contains no missing scripts
+PASS Missing file creates default JSON
+PASS New store restores progress and sound from disk
+PASS Invalid fixture differs from valid JSON 0
+PASS Invalid save recovers safely 0
+PASS Invalid fixture differs from valid JSON 1
+PASS Invalid save recovers safely 1
+PASS Invalid fixture differs from valid JSON 2
+PASS Invalid save recovers safely 2
+PASS Invalid fixture differs from valid JSON 3
+PASS Invalid save recovers safely 3
+PASS Invalid fixture differs from valid JSON 4
+PASS Invalid save recovers safely 4
+PASS Invalid fixture differs from valid JSON 5
+PASS Invalid save recovers safely 5
+PASS Invalid fixture differs from valid JSON 6
+PASS Invalid save recovers safely 6
+PASS Invalid fixture differs from valid JSON 7
+PASS Invalid save recovers safely 7
+PASS Invalid fixture differs from valid JSON 8
+PASS Invalid save recovers safely 8
+PASS Invalid fixture differs from valid JSON 9
+PASS Invalid save recovers safely 9
+PASS Corrupt data preserved for diagnosis
+PASS Reset is persisted
+PASS Disk failure keeps valid in-memory defaults without crashing
+PASS Scene has manager and connected UI
+PASS Play tests use isolated save file
+PASS Menu lies inside visible screen bounds
+PASS Pause button freezes gameplay and shows settings
+PASS Pause writes JSON
+PASS Volume slider changes audio and JSON immediately
+PASS Reset opens in-game confirmation
+PASS Cancel preserves JSON and progress
+PASS Locked levels cannot be selected
+PASS Manager rejects locked level requests
+PASS Focus loss saves
+PASS Application pause saves
+PASS Level 1 reads its own ScriptableObject
+PASS Level 1 enemy count comes from data
+PASS Player animation state names match the existing controller in level 1
+PASS Level 1 player balance applied before health initialization
+PASS Original bomb prefab reference preserved
+PASS Spawned bomb reads level data
+PASS Changing LevelData affects newly spawned gameplay object
+PASS Bomb explosion defeats Enemy2 in level 1
+PASS Bomb explosion defeats Enemy1 in level 1
+PASS Defeating enemies completes level 1
+PASS Level 1 completion saves and unlocks the next level
+PASS Level 2 reads its own ScriptableObject
+PASS Level 2 enemy count comes from data
+PASS Player animation state names match the existing controller in level 2
+PASS Level 2 player balance applied before health initialization
+PASS Original bomb prefab reference preserved
+PASS Spawned bomb reads level data
+PASS Changing LevelData affects newly spawned gameplay object
+PASS Bomb explosion defeats Enemy1 in level 2
+PASS Bomb explosion defeats Enemy4 in level 2
+PASS Bomb explosion defeats Enemy2 in level 2
+PASS Defeating enemies completes level 2
+PASS Level 2 completion saves and unlocks the next level
+PASS Level 3 reads its own ScriptableObject
+PASS Level 3 enemy count comes from data
+PASS Player animation state names match the existing controller in level 3
+PASS Level 3 player balance applied before health initialization
+PASS Original bomb prefab reference preserved
+PASS Spawned bomb reads level data
+PASS Changing LevelData affects newly spawned gameplay object
+PASS Bomb explosion defeats Enemy4 in level 3
+PASS Bomb explosion defeats Enemy2 in level 3
+PASS Bomb explosion defeats Enemy1 in level 3
+PASS Bomb explosion defeats Enemy3 in level 3
+PASS Defeating enemies completes level 3
+PASS Level 3 completion saves and unlocks the next level
+PASS Progress and settings survive exiting and re-entering Play mode (domain reload)
+PASS Cancel preserves completed three-level progress
+PASS Confirm resets progression and reloads level 1
+PASS Reset updates volume and locked-level UI immediately
+PASS Confirmed reset is saved to JSON
+PASS No runtime errors or exceptions during Play verification
+ALL AUTOMATED CHECKS PASSED

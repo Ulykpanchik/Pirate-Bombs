@@ -8,14 +8,14 @@ public class PlayerBomb : MonoBehaviour
     public Transform bombSpawnPoint;
 
     [Header("Throw Settings")]
-    public float holdThreshold = 0.2f;
-    public float maxChargeTime = 2f;
-    public float minThrowForce = 4f;
-    public float maxThrowForce = 14f;
-    public float throwUpForce = 5f;
+    [HideInInspector] public float holdThreshold;
+    [HideInInspector] public float maxChargeTime;
+    [HideInInspector] public float minThrowForce;
+    [HideInInspector] public float maxThrowForce;
+    [HideInInspector] public float throwUpForce;
 
     [Header("Placement")]
-    public float placementDistance = 0.7f;
+    [HideInInspector] public float placementDistance;
 
     [Header("Charge Bar")]
     public BombChargeBar chargeBar;
@@ -32,6 +32,7 @@ public class PlayerBomb : MonoBehaviour
 
     void Awake()
     {
+        LevelSession.ActiveData.Apply(this);
         spriteRenderer = GetComponent<SpriteRenderer>();
         playerCollider = GetComponent<Collider2D>();
         playerHealth = GetComponent<PlayerHealth>();
@@ -39,6 +40,7 @@ public class PlayerBomb : MonoBehaviour
 
     void Update()
     {
+        if (Time.timeScale == 0f) { CancelBombHold(); wasMobileBombHeld = false; return; }
         // Keyboard controls
         bool keyboardPressed = Input.GetKeyDown(KeyCode.F);
         bool keyboardReleased = Input.GetKeyUp(KeyCode.F);

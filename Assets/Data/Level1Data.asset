@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3efb7f28d2f1ca96a384e6aa217910ce, type: 3}
+  m_Name: Level1Data
+  m_EditorClassIdentifier: 
+  levelNumber: 1
+  displayName: First Watch
+  sceneName: SampleScene
+  enemyCount: 2
+  playerMovement:
+    moveSpeed: 5
+    jumpForce: 10
+    groundCheckRadius: 0.15
+    landingDuration: 0.3
+  playerHealth:
+    maxHealth: 3
+    knockbackForce: 3
+    knockbackUpForce: 4
+    hitDuration: 0.3
+  playerBomb:
+    holdThreshold: 0.2
+    maxChargeTime: 2
+    minThrowForce: 4
+    maxThrowForce: 14
+    throwUpForce: 5
+    placementDistance: 0.7
+  enemyHealth:
+    maxHealth: 1
+    knockbackForce: 4
+    knockbackUpForce: 4
+    groundCheckRadius: 0.15
+    hitDuration: 0.35
+    landingTimeout: 3
+    destroyAfterDeath: 2
+  enemy1_Kicker:
+    detectionRadius: 5
+    attackRange: 1
+    attackReachTolerance: 0.3
+    moveSpeed: 2.55
+    groundCheckRadius: 0.15
+    jumpForce: 8
+    jumpHeightThreshold: 0.6
+    jumpHorizontalRange: 1.5
+    jumpCooldown: 0.8
+    obstacleCheckDistance: 1.5
+    obstacleCheckHeight: 0.35
+    attackDamage: 1
+    bombKickForce: 5
+    bombKickUpForce: 2
+    attackHitTime: 0.2
+    attackDuration: 0.5
+    attackCooldown: 0.8
+    restAfterBombKick: 1
+    questionDuration: 0.6
+    alertDuration: 0.6
+  enemyBehaviorAI:
+    detectionRadius: 5
+    attackRange: 1
+    attackReachTolerance: 0.3
+    moveSpeed: 2.55
+    groundCheckRadius: 0.15
+    jumpForce: 8
+    jumpHeightThreshold: 0.6
+    jumpHorizontalRange: 1.5
+    jumpCooldown: 1
+    obstacleCheckDistance: 1
+    obstacleCheckHeight: 0.35
+    attackDamage: 1
+    attackHitTime: 0.2
+    attackDuration: 0.5
+    attackCooldown: 0.8
+    restAfterBomb: 1
+    fleeDistance: 5
+    fleeSafetyMargin: 1
+    restAfterFlee: 0.5
+    questionDuration: 1
+    alertDuration: 1
+  bomb:
+    explosionDelay: 3
+    explosionRadius: 3.5
+    damage: 1
+    ignitionDelay: 0.5
+    extinguishDuration: 0.5
+  itemPhysics:
+    explosionForce: 8
+    upwardForce: 4
+    rotationForce: 3

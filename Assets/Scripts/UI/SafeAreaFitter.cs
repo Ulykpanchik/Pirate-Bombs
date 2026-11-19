@@ -29,6 +29,13 @@ public class SafeAreaFitter : MonoBehaviour
         Rect safeArea = Screen.safeArea;
 
         lastSafeArea = safeArea;
+        // Device Simulator can leave a safe area from a different resolution.
+        // Never let that stale rectangle move the HUD and touch controls off-screen.
+        if (Screen.width <= 0 || Screen.height <= 0) return;
+        if (safeArea.width <= 0 || safeArea.height <= 0 ||
+            safeArea.xMin < 0 || safeArea.yMin < 0 ||
+            safeArea.xMax > Screen.width || safeArea.yMax > Screen.height)
+            safeArea = new Rect(0, 0, Screen.width, Screen.height);
         lastScreenSize = new Vector2Int(
             Screen.width, Screen.height
         );

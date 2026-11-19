@@ -9,9 +9,9 @@ using UnityEngine;
 public class Bomb : MonoBehaviour
 {
     [Header("Explosion")]
-    public float explosionDelay = 3f;
-    public float explosionRadius = 2f;
-    public int damage = 1;
+    [HideInInspector] public float explosionDelay;
+    [HideInInspector] public float explosionRadius;
+    [HideInInspector] public int damage;
     public LayerMask damageLayers = ~0;
 
     [Header("Explosion Effect")]
@@ -21,11 +21,11 @@ public class Bomb : MonoBehaviour
 public LayerMask itemLayer;
 
     [Header("Fuse Settings")]
-    public float ignitionDelay = 0.5f;
+    [HideInInspector] public float ignitionDelay;
 
     [Header("Extinguished Bomb")]
     public Sprite extinguishedSprite;
-    public float extinguishDuration = 0.5f;
+    [HideInInspector] public float extinguishDuration;
 
     private Rigidbody2D rb;
     private Collider2D bombCollider;
@@ -41,6 +41,7 @@ public LayerMask itemLayer;
 
     void Awake()
     {
+        LevelSession.ActiveData.Apply(this);
         rb = GetComponent<Rigidbody2D>();
         bombCollider = GetComponent<Collider2D>();
         animator = GetComponent<Animator>();

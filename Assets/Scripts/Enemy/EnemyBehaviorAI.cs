@@ -25,42 +25,45 @@ public class EnemyBehaviorAI : MonoBehaviour
 
     [Header("Detection")]
     public Transform player;
-    public float detectionRadius = 6f;
-    public float attackRange = 1f;
+    [HideInInspector] public float detectionRadius;
+    [HideInInspector] public float attackRange;
+    [HideInInspector] public float attackReachTolerance;
 
     [Header("Movement")]
-    public float moveSpeed = 3f;
+    [HideInInspector] public float moveSpeed;
 
     [Header("Jump")]
     public Transform groundCheck;
     public LayerMask groundLayer;
-    public float groundCheckRadius = 0.15f;
-    public float jumpForce = 8f;
-    public float jumpHeightThreshold = 0.8f;
-    public float jumpHorizontalRange = 1.2f;
-    public float jumpCooldown = 1.2f;
+    [HideInInspector] public float groundCheckRadius;
+    [HideInInspector] public float jumpForce;
+    [HideInInspector] public float jumpHeightThreshold;
+    [HideInInspector] public float jumpHorizontalRange;
+    [HideInInspector] public float jumpCooldown;
 
     [Header("Obstacle Detection")]
     public LayerMask obstacleLayers;
-    public float obstacleCheckDistance = 0.4f;
-    public float obstacleCheckHeight = 0.35f;
+    [HideInInspector] public float obstacleCheckDistance;
+    [HideInInspector] public float obstacleCheckHeight;
 
     [Header("Attack")]
-    public int attackDamage = 1;
-    public float attackHitTime = 0.2f;
-    public float attackDuration = 0.5f;
-    public float attackCooldown = 0.8f;
+    [HideInInspector] public int attackDamage;
+    [HideInInspector] public float attackHitTime;
+    [HideInInspector] public float attackDuration;
+    [HideInInspector] public float attackCooldown;
 
     [Header("Bomb Interaction")]
-    public float restAfterBomb = 1f;
-    public float fleeDistance = 8f;
+    [HideInInspector] public float restAfterBomb;
+    [HideInInspector] public float fleeDistance;
+    [HideInInspector] public float fleeSafetyMargin;
+    [HideInInspector] public float restAfterFlee;
 
     [Header("Alert")]
     public Transform alertPoint;
     public GameObject questionPrefab;
     public GameObject exclamationPrefab;
-    public float questionDuration = 0.3f;
-    public float alertDuration = 0.4f;
+    [HideInInspector] public float questionDuration;
+    [HideInInspector] public float alertDuration;
 
     private Rigidbody2D rb;
     private Collider2D bodyCollider;
@@ -107,6 +110,7 @@ public class EnemyBehaviorAI : MonoBehaviour
 
     void Awake()
     {
+        LevelSession.ActiveData.Apply(this);
         rb = GetComponent<Rigidbody2D>();
         bodyCollider = GetComponent<Collider2D>();
         animator = GetComponent<Animator>();
@@ -520,13 +524,13 @@ public class EnemyBehaviorAI : MonoBehaviour
         // Get outside detection range before stopping
         float safeDistance = Mathf.Max(
             fleeDistance,
-            detectionRadius + 1f
+            detectionRadius + fleeSafetyMargin
         );
 
         if (distance >= safeDistance)
         {
             ChangeState(State.Idle);
-            restTimer = 0.5f;
+            restTimer = restAfterFlee;
             return;
         }
 
@@ -581,7 +585,7 @@ else
             target.position
         );
 
-        if (distance > attackRange + 0.3f)
+        if (distance > attackRange + attackReachTolerance)
             return;
 
         Bomb bomb = target.GetComponent<Bomb>();

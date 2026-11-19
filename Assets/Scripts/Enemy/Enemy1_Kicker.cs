@@ -15,34 +15,36 @@ public class Enemy1_Kicker : MonoBehaviour
 
     [Header("Target Detection")]
     public Transform player;
-    public float detectionRadius = 7f;
-    public float attackRange = 1f;
+    [HideInInspector] public float detectionRadius;
+    [HideInInspector] public float attackRange;
+    [HideInInspector] public float attackReachTolerance;
 
     [Header("Movement")]
-    public float moveSpeed = 3f;
+    [HideInInspector] public float moveSpeed;
 
     [Header("Jump Settings")]
     public Transform groundCheck;
     public LayerMask groundLayer;
-    public float groundCheckRadius = 0.15f;
-    public float jumpForce = 10f;
-    public float jumpHeightThreshold = 0.6f;
-    public float jumpHorizontalRange = 1.5f;
-    public float jumpCooldown = 0.8f;
+    [HideInInspector] public float groundCheckRadius;
+    [HideInInspector] public float jumpForce;
+    [HideInInspector] public float jumpHeightThreshold;
+    [HideInInspector] public float jumpHorizontalRange;
+    [HideInInspector] public float jumpCooldown;
     [Header("Obstacle Detection")]
 public LayerMask obstacleLayers;
-public float obstacleCheckDistance = 0.8f;
-public float obstacleCheckHeight = 0.35f;
+[HideInInspector] public float obstacleCheckDistance;
+[HideInInspector] public float obstacleCheckHeight;
 
     [Header("Attack")]
-    public int attackDamage = 1;
-    public float bombKickForce = 9f;
-    public float attackHitTime = 0.2f;
-    public float attackDuration = 0.5f;
-    public float attackCooldown = 0.8f;
+    [HideInInspector] public int attackDamage;
+    [HideInInspector] public float bombKickForce;
+    [HideInInspector] public float bombKickUpForce;
+    [HideInInspector] public float attackHitTime;
+    [HideInInspector] public float attackDuration;
+    [HideInInspector] public float attackCooldown;
 
     [Header("After Bomb Kick")]
-    public float restAfterBombKick = 1f;
+    [HideInInspector] public float restAfterBombKick;
 
     [Header("Alert Position")]
     public Transform alertPoint;
@@ -52,8 +54,8 @@ public float obstacleCheckHeight = 0.35f;
     public GameObject exclamationPrefab;
 
     [Header("Alert Timing")]
-    public float questionDuration = 0.3f;
-    public float alertDuration = 0.4f;
+    [HideInInspector] public float questionDuration;
+    [HideInInspector] public float alertDuration;
 
     private Rigidbody2D rb;
     private Animator animator;
@@ -100,6 +102,7 @@ public float obstacleCheckHeight = 0.35f;
 
     void Awake()
     {
+        LevelSession.ActiveData.Apply(this);
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -383,7 +386,7 @@ void TryJump(float differenceX)
             target.position
         );
 
-        if (distance > attackRange + 0.3f)
+        if (distance > attackRange + attackReachTolerance)
             return;
 
         float direction =

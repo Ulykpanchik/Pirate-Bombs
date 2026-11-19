@@ -4,16 +4,16 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
-    public float moveSpeed = 5f;
-    public float jumpForce = 12f;
+    [HideInInspector] public float moveSpeed;
+    [HideInInspector] public float jumpForce;
 
     [Header("Ground Check")]
     public Transform groundCheck;
-    public float groundCheckRadius = 0.15f;
+    [HideInInspector] public float groundCheckRadius;
     public LayerMask groundLayer;
 
     [Header("Landing Animation")]
-    public float landingDuration = 0.15f;
+    [HideInInspector] public float landingDuration;
 
     private Rigidbody2D rb;
     private Animator animator;
@@ -29,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Awake()
     {
+        LevelSession.ActiveData.Apply(this);
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -85,7 +86,7 @@ public class PlayerMovement : MonoBehaviour
         {
             isLanding = true;
             landingTimer = landingDuration;
-            animator.Play("Ground", 0, 0f);
+            animator.Play("Player_Ground", 0, 0f);
         }
 
         if (isLanding)
