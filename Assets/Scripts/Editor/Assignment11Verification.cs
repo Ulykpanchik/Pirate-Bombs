@@ -49,7 +49,7 @@ public static class Assignment11Verification
             Mathf.Approximately(store.Data.soundVolume, 0.37f), "New store restores progress and sound from disk");
         string valid = JsonUtility.ToJson(ProgressStore.Defaults());
         string[] invalid = { "", "{bad json", "null", "{}", "[]",
-            valid.Replace("\"version\":1", "\"version\":99"),
+            valid.Replace("\"version\":2", "\"version\":99"),
             valid.Replace("\"highestUnlockedLevel\":1", "\"highestUnlockedLevel\":9"),
             valid.Replace("\"soundVolume\":1.0", "\"soundVolume\":-1.0"),
             valid.Replace("\"completedLevels\":[false,false,false]", "\"completedLevels\":[true]"),
@@ -117,7 +117,7 @@ public static class Assignment11Verification
         Check(LevelSession.Store.LastSaveReason == "pause", "Pause writes JSON");
         string before = File.ReadAllText(LevelSession.Store.FilePath);
         session.ui.volume.value = 0.42f;
-        Check(File.ReadAllText(LevelSession.Store.FilePath) != before && Mathf.Approximately(AudioListener.volume, 0.42f),
+        Check(File.ReadAllText(LevelSession.Store.FilePath) != before && Mathf.Approximately(LevelSession.Store.Data.musicVolume, 0.42f) && AudioManager.Instance.mixer.GetFloat("MusicVolumeDb", out float musicDb) && Mathf.Abs(musicDb - AudioManager.ToDecibels(0.42f)) < 0.01f,
             "Volume slider changes audio and JSON immediately");
         session.ui.resetButton.onClick.Invoke();
         Check(session.ui.confirmationPanel.activeSelf, "Reset opens in-game confirmation");

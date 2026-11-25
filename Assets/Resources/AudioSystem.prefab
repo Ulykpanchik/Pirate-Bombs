@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6775245848183816599
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2885887379666554012}
+  - component: {fileID: 8409278701372462612}
+  - component: {fileID: 8758213975042811060}
+  m_Layer: 0
+  m_Name: AudioSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2885887379666554012
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6775245848183816599}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8409278701372462612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6775245848183816599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b983477a37c779e49bec0ec7a0cdc9a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  catalog: {fileID: 11400000, guid: 6e7059a3aa0412c448e4f7eb0121b9cb, type: 2}
+  mixer: {fileID: 24100000, guid: 0848d4053f523334b8a92006f8f82d7d, type: 2}
+  sfxGroup: {fileID: -1303034193646799209, guid: 0848d4053f523334b8a92006f8f82d7d, type: 2}
+  normal: {fileID: 24500006, guid: 0848d4053f523334b8a92006f8f82d7d, type: 2}
+  paused: {fileID: 6489627742145203640, guid: 0848d4053f523334b8a92006f8f82d7d, type: 2}
+--- !u!114 &8758213975042811060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6775245848183816599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95bb47ebabf611c429f49cc3717ff071, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MusicManager
+  catalog: {fileID: 11400000, guid: 6e7059a3aa0412c448e4f7eb0121b9cb, type: 2}
+  musicGroup: {fileID: -6478667937478635725, guid: 0848d4053f523334b8a92006f8f82d7d, type: 2}
+  crossfadeSeconds: 1

@@ -1,0 +1,13 @@
+Pirate Music (mutiny_2_2.mp3) by migfus20
+Source: https://opengameart.org/content/pirate-music
+License: Creative Commons Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+Audio content unmodified. Attribution required and included in README and in-game Audio Credits.
+
+Pirate Indenture (pirate_indenture_loop.wav) by Eldritch Grim
+Source: https://opengameart.org/content/pirate-indenture
+License: CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+Attribution not required. Audio unmodified.
+
+Source pages verified 2026-11-23.

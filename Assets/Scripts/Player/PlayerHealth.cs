@@ -71,10 +71,12 @@ public class PlayerHealth : MonoBehaviour
         if (CurrentHealth == 0)
         {
             IsDead = true;
+            AudioManager.Play(SoundEvent.Death);
             StartCoroutine(DeathRoutine(direction));
         }
         else
         {
+            AudioManager.Play(SoundEvent.Hit);
             StartCoroutine(HitRoutine(direction));
         }
     }

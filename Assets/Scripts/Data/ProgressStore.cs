@@ -10,7 +10,9 @@ public sealed class ProgressData
     public int highestUnlockedLevel;
     public int currentLevel;
     public bool[] completedLevels;
-    public float soundVolume;
+    public float soundVolume; // Retained for version-1 migration and older editor tools.
+    public float musicVolume;
+    public float sfxVolume;
 }
 
 /// <summary>Small, synchronous JSON store. A failed disk write never stops gameplay.</summary>
@@ -26,18 +28,19 @@ public sealed class ProgressStore
     public ProgressStore(string filePath) { FilePath = filePath; Load(); }
 
     public static ProgressData Defaults() => new ProgressData {
-        version = 1, format = "PirateBombs.Progress", highestUnlockedLevel = 1,
-        currentLevel = 1, completedLevels = new bool[LevelCount], soundVolume = 1f
+        version = 2, format = "PirateBombs.Progress", highestUnlockedLevel = 1,
+        currentLevel = 1, completedLevels = new bool[LevelCount], soundVolume = 1f, musicVolume = 1f, sfxVolume = 1f
     };
 
     public static bool IsValid(ProgressData d)
     {
-        if (d == null || d.version != 1 || d.format != "PirateBombs.Progress" ||
+        if (d == null || (d.version != 1 && d.version != 2) || d.format != "PirateBombs.Progress" ||
             d.completedLevels == null || d.completedLevels.Length != LevelCount ||
             d.highestUnlockedLevel < 1 || d.highestUnlockedLevel > LevelCount ||
             d.currentLevel < 1 || d.currentLevel > d.highestUnlockedLevel ||
             float.IsNaN(d.soundVolume) || float.IsInfinity(d.soundVolume) ||
             d.soundVolume < 0f || d.soundVolume > 1f) return false;
+        if (d.version == 2 && (!ValidVolume(d.musicVolume) || !ValidVolume(d.sfxVolume))) return false;
         for (int i = 0; i < LevelCount; i++)
         {
             if (i < d.highestUnlockedLevel - 1 && !d.completedLevels[i]) return false;
@@ -45,6 +48,8 @@ public sealed class ProgressStore
         }
         return true;
     }
+
+    static bool ValidVolume(float v) => !float.IsNaN(v) && !float.IsInfinity(v) && v >= 0 && v <= 1;
 
     public void Load()
     {
@@ -58,7 +63,13 @@ public sealed class ProgressStore
                     if (!json.Contains("\"" + field + "\"")) throw new InvalidDataException("Missing save field: " + field);
                 var loaded = JsonUtility.FromJson<ProgressData>(json);
                 if (!IsValid(loaded)) throw new InvalidDataException("Invalid or unsupported progress.");
+                if (loaded.version == 2 && (!json.Contains("\"musicVolume\"") || !json.Contains("\"sfxVolume\""))) throw new InvalidDataException("Missing audio settings.");
                 Data = loaded;
+                if (Data.version == 1) {
+                    Data.musicVolume = Data.sfxVolume = Data.soundVolume;
+                    Data.version = 2;
+                    Save("migrated version 1 audio settings");
+                }
                 return;
             }
         } catch (Exception e) {
@@ -103,8 +114,18 @@ public sealed class ProgressStore
     {
         if (float.IsNaN(value) || float.IsInfinity(value)) return;
         Data.soundVolume = Mathf.Clamp01(value);
-        AudioListener.volume = Data.soundVolume;
+        Data.musicVolume = Data.sfxVolume = Data.soundVolume;
+        AudioManager.Instance?.ApplySettings();
         Save("settings changed");
+    }
+
+    public void SetMusicVolume(float value) {
+        if (!ValidVolume(value)) return;
+        Data.musicVolume = value; AudioManager.Instance?.ApplySettings(); Save("music settings changed");
+    }
+    public void SetSfxVolume(float value) {
+        if (!ValidVolume(value)) return;
+        Data.sfxVolume = value; AudioManager.Instance?.ApplySettings(); Save("sfx settings changed");
     }
 
     public void Reset()

@@ -77,7 +77,7 @@ public sealed class Assignment11Demo : MonoBehaviour
         caption.text = "Pause saves automatically. Levels 2 and 3 start locked.";
         yield return new WaitForSecondsRealtime(3);
         LevelSession.Instance.ui.volume.value = 0.35f;
-        caption.text = "Changing sound volume writes progress.json immediately.";
+        caption.text = "Changing music volume writes progress.json immediately.";
         yield return new WaitForSecondsRealtime(3);
         LevelSession.Instance.ui.resetButton.onClick.Invoke();
         caption.text = "Reset asks for confirmation. Cancel keeps progress and settings.";

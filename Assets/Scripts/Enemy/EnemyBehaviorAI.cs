@@ -126,6 +126,8 @@ public class EnemyBehaviorAI : MonoBehaviour
 
     void Update()
     {
+        // Do not consume an attack wind-up while gameplay is paused.
+        if (Time.timeScale == 0f) return;
         if (IsBlocked())
         {
             HideAlerts();
@@ -689,6 +691,7 @@ case State.Flee:
 
             case State.Attack:
             {
+                AudioManager.Play(SoundEvent.EnemyWindup);
                 attackApplied = false;
                 bombInteracted = false;
 

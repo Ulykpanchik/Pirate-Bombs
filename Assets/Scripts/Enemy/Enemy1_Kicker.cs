@@ -117,6 +117,8 @@ public LayerMask obstacleLayers;
 
     void Update()
     {
+        // Do not consume an attack wind-up while gameplay is paused.
+        if (Time.timeScale == 0f) return;
         if (IsBlocked())
         {
             HideAlerts();
@@ -478,6 +480,7 @@ void TryJump(float differenceX)
                 break;
 
             case EnemyState.Attack:
+                AudioManager.Play(SoundEvent.EnemyWindup);
                 attackApplied = false;
                 PlayAnimation("Attack");
                 break;

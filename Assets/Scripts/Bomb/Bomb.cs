@@ -189,6 +189,7 @@ public void Extinguish()
             return;
 
         exploded = true;
+        AudioManager.Play(SoundEvent.Explosion);
         if (CameraShake.Instance != null)
 {
     CameraShake.Instance.Shake();

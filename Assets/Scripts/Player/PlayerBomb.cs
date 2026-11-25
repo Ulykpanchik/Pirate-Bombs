@@ -166,6 +166,7 @@ public class PlayerBomb : MonoBehaviour
         );
 
         bomb.IgnorePlayerCollision(playerCollider);
+        AudioManager.Play(SoundEvent.BombPlace);
     }
 
     void ThrowBomb(float direction, float holdTime)
@@ -200,6 +201,7 @@ public class PlayerBomb : MonoBehaviour
             throwUpForce
         );
 
+        AudioManager.Play(SoundEvent.BombThrow);
         bomb.Throw(force);
     }
 

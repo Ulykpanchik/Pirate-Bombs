@@ -36,3 +36,14 @@ The APK build command was executed, but Unity reported that Android Build Suppor
 The Editor-only demonstration recorder captures the running game and uses an isolated demo save. Captions identify the accelerated bomb-damage completion tests. It is excluded from builds. The recording is supporting evidence, not a claim of a full manual Android playthrough.
 
 Two pre-existing player animation calls were corrected to the actual controller state names Player_Ground and Player_Idle. No animation assets were redesigned.
+
+
+## Assignment 12 — draft for student review (2026-11-23)
+
+- Request: I asked the agent to integrate licensed sound effects, two music tracks, mixer snapshots and saved independent sliders into the existing game.
+- Agent correction: the first integration test compared Windows paths with forward slashes and failed its isolation assertion; the assertion was corrected to normalize separators. No gameplay workaround was used.
+- Implementation choice to review: existing version-1 saves migrate into version 2, and a separate MusicPause group keeps snapshot attenuation independent of the Music slider.
+- Implementation choice to review: warnings play at Attack entry, death plays on lethal damage, and bomb sounds cover the absent pickup mechanic; existing attack timing and balance are preserved.
+- Student review pending: confirm the sound choices and phone listening/device results personally; these lines are an AI-prepared draft, not claims that the student tested or changed the game.
+
+Layout correction during verification: the taller two-slider menu overflowed a short Editor Game view. A small MenuPanelFitter now scales menu/credits/confirmation panels inside the existing safe area, without changing gameplay controls or the CanvasScaler. Student review pending.

@@ -147,6 +147,7 @@ public class PlayerMovement : MonoBehaviour
             );
 #endif
 
+            AudioManager.Play(SoundEvent.Jump);
             jumpRequested = false;
             isGrounded = false;
         }
